@@ -2,8 +2,13 @@
   "name": "pj",
   "version": "0.0.0",
   "description": "pixel jockey",
-  "main": "index.js",
+  "main": "src/server.js",
+  "browser": "src/client.js",
   "scripts": {
+    "build-client": "browserify . -o src/bundle.js -g uglifyify",
+    "watch-client": "budo . --dir src --live",
+    "start-server": "node .",
+    "watch-server": "node-dev .",
     "test": "tape src/node_modules/**/test/*.js"
   },
   "repository": {
@@ -23,5 +28,16 @@
   "bugs": {
     "url": "https://github.com/pixjs/pj/issues"
   },
-  "homepage": "https://github.com/pixjs/pj#readme"
+  "homepage": "https://github.com/pixjs/pj#readme",
+  "devDependencies": {
+    "budo": "^4.1.0",
+    "gh-pages": "^0.3.1",
+    "node-dev": "^2.6.2",
+    "tape": "^4.0.0",
+    "watchify": "^3.2.3"
+  },
+  "dependencies": {
+    "browserify": "^10.2.4",
+    "uglifyify": "^3.0.1"
+  }
 }
