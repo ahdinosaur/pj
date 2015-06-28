@@ -14,13 +14,11 @@
     "test": "tape src/node_modules/**/test/*.js"
   },
   "browserify": {
-    "transform": [
-      "brfs"
-    ]
+    "transform": []
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixjs/pj.git"
+    "url": "git+https://github.com/ahdinosaur/pj.git"
   },
   "keywords": [
     "ndpixel",
@@ -33,9 +31,9 @@
   "author": "ahdinosaur",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/pixjs/pj/issues"
+    "url": "https://github.com/ahdinosaur/pj/issues"
   },
-  "homepage": "https://github.com/pixjs/pj#readme",
+  "homepage": "https://github.com/ahdinosaur/pj#readme",
   "devDependencies": {
     "budo": "^4.1.0",
     "gh-pages": "^0.3.1",
@@ -52,9 +50,10 @@
     "ledgrid-ui": "ahdinosaur/ledgrid-ui",
     "lodash.assign": "^3.2.0",
     "ndpixels-opc": "ahdinosaur/ndpixels-opc",
-    "pbs": "^1.3.2",
+    "protocol-buffers": "^3.1.2",
     "rainbow-pixels": "ahdinosaur/rainbow-pixels",
     "react-render-stream": "ahdinosaur/react-render-stream",
+    "through2": "^2.0.0",
     "websocket-stream": "^1.5.0"
   }
 }

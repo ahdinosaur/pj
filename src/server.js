@@ -8,11 +8,7 @@ var httpServer = http.createServer(
   ecstatic(config.ecstatic)
 )
 
-var api = require('api')(config.api)
+var api = require('api')(httpServer, config.api)
 var ui = require('ui')(config.ui)
 
-var wsServer = websocket.createServer({
-  server: httpServer
-}, api)
-
-api(ui)
+require('api/handler')(ui)
