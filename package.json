@@ -1,0 +1,27 @@
+{
+  "name": "pj",
+  "version": "0.0.0",
+  "description": "pixel jockey",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape src/node_modules/**/test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixjs/pj.git"
+  },
+  "keywords": [
+    "ndpixel",
+    "pixel",
+    "jockey",
+    "vj",
+    "rgb",
+    "hsv"
+  ],
+  "author": "ahdinosaur",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/pixjs/pj/issues"
+  },
+  "homepage": "https://github.com/pixjs/pj#readme"
+}
