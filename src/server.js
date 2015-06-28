@@ -1,14 +1,18 @@
 var http = require('http')
+var websocket = require('websocket-stream')
 var ecstatic = require('ecstatic')
 
 var config = require('config')
 
-var server = http.createServer(function (req, res) {
-  if (req.url === '/') {
-    require('ui')(config.ui)(req, res)
-  } else if (req.url === '/api') {
-    require('api')(config.api)(req, res)
-  } else {
-    ecstatic(config.ecstatic)(req, res)
-  }
-})
+var httpServer = http.createServer(
+  ecstatic(config.ecstatic)
+)
+
+var api = require('api')(config.api)
+var ui = require('ui')(config.ui)
+
+var wsServer = websocket.createServer({
+  server: httpServer
+}, api)
+
+api(ui)

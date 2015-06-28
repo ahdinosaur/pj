@@ -5,11 +5,18 @@
   "main": "src/server.js",
   "browser": "src/client.js",
   "scripts": {
-    "build-client": "browserify . -o src/bundle.js -g uglifyify",
+    "build-client": "browserify . -o src/bundle.js",
     "watch-client": "budo . --dir src --live",
     "start-server": "node .",
     "watch-server": "node-dev .",
+    "start": "npm run build-client && npm run start-server",
+    "watch": "(npm run watch-client & npm run watch-server)",
     "test": "tape src/node_modules/**/test/*.js"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
   },
   "repository": {
     "type": "git",
@@ -37,7 +44,17 @@
     "watchify": "^3.2.3"
   },
   "dependencies": {
+    "brfs": "^1.4.0",
     "browserify": "^10.2.4",
-    "uglifyify": "^3.0.1"
+    "defined": "^1.0.0",
+    "ecstatic": "^0.8.0",
+    "floodgate": "^0.1.2",
+    "ledgrid-ui": "ahdinosaur/ledgrid-ui",
+    "lodash.assign": "^3.2.0",
+    "ndpixels-opc": "ahdinosaur/ndpixels-opc",
+    "pbs": "^1.3.2",
+    "rainbow-pixels": "ahdinosaur/rainbow-pixels",
+    "react-render-stream": "ahdinosaur/react-render-stream",
+    "websocket-stream": "^1.5.0"
   }
 }
