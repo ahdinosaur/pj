@@ -34,26 +34,11 @@
     "url": "https://github.com/ahdinosaur/pj/issues"
   },
   "homepage": "https://github.com/ahdinosaur/pj#readme",
-  "devDependencies": {
-    "budo": "^4.1.0",
-    "gh-pages": "^0.3.1",
-    "node-dev": "^2.6.2",
-    "tape": "^4.0.0",
-    "watchify": "^3.2.3"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "brfs": "^1.4.0",
-    "browserify": "^10.2.4",
-    "defined": "^1.0.0",
-    "ecstatic": "^0.8.0",
-    "floodgate": "^0.1.2",
-    "ledgrid-ui": "ahdinosaur/ledgrid-ui",
-    "lodash.assign": "^3.2.0",
-    "ndpixels-opc": "ahdinosaur/ndpixels-opc",
-    "protocol-buffers": "^3.1.2",
-    "rainbow-pixels": "ahdinosaur/rainbow-pixels",
-    "react-render-stream": "ahdinosaur/react-render-stream",
-    "through2": "^2.0.0",
-    "websocket-stream": "^1.5.0"
+    "pull-redux": "^1.0.0",
+    "pull-stream": "^3.2.0",
+    "pull-ws-server": "^1.4.0",
+    "redux": "^3.3.1"
   }
 }
