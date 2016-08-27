@@ -5,16 +5,15 @@
   "main": "src/server.js",
   "browser": "src/client.js",
   "scripts": {
-    "build-client": "browserify . -o src/bundle.js",
-    "watch-client": "budo . --dir src --live",
-    "start-server": "node .",
-    "watch-server": "node-dev .",
-    "start": "npm run build-client && npm run start-server",
-    "watch": "(npm run watch-client & npm run watch-server)",
-    "test": "tape src/node_modules/**/test/*.js"
+    "dev:controller": "node-dev controller",
+    "dev": "npm-run-all dev:* | garnish",
+    "prod:controller": "node controller",
+    "prod": "npm-run-all prod:*"
   },
   "browserify": {
-    "transform": []
+    "transform": [
+      "hyperxify"
+    ]
   },
   "repository": {
     "type": "git",
@@ -34,11 +33,29 @@
     "url": "https://github.com/ahdinosaur/pj/issues"
   },
   "homepage": "https://github.com/ahdinosaur/pj#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "node-dev": "^3.1.0"
+  },
   "dependencies": {
-    "pull-redux": "^1.0.0",
+    "bankai": "^2.0.2",
+    "bole": "^2.0.0",
+    "browserify": "^13.0.0",
+    "garnish": "^5.0.2",
+    "http-ndjson": "^3.0.0",
+    "hyperx": "^2.0.2",
+    "hyperxify": "^2.0.1",
+    "npm-run-all": "^1.5.3",
+    "pull-http": "^1.0.1",
+    "pull-json-doubleline": "^1.0.0",
+    "pull-redux": "^1.1.0",
     "pull-stream": "^3.2.0",
     "pull-ws-server": "^1.4.0",
-    "redux": "^3.3.1"
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "redux": "^3.3.1",
+    "server-router": "^1.1.5",
+    "server-summary": "^5.0.1",
+    "sheetify": "^5.0.0",
+    "tcomb-form": "^0.9.0"
   }
 }
