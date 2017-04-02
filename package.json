@@ -2,58 +2,42 @@
   "name": "pj",
   "version": "0.0.0",
   "description": "pixel jockey",
-  "main": "src/server.js",
-  "browser": "src/client.js",
+  "main": "index.js",
   "scripts": {
-    "build-client": "browserify . -o src/bundle.js",
-    "watch-client": "budo . --dir src --live",
-    "start-server": "node .",
-    "watch-server": "node-dev .",
-    "start": "npm run build-client && npm run start-server",
-    "watch": "(npm run watch-client & npm run watch-server)",
-    "test": "tape src/node_modules/**/test/*.js"
+    "start": "node-dev example",
+    "test:deps": "dependency-check . && dependency-check . --extra --no-dev -i es2040",
+    "test:lint": "standard",
+    "test:node": "NODE_ENV=test run-default tape test/*.js --",
+    "test:coverage": "NODE_ENV=test nyc npm run test:node",
+    "test:coverage:report": "nyc report --reporter=lcov npm run test:node",
+    "test": "npm-run-all -s test:node test:lint test:deps"
   },
   "browserify": {
-    "transform": []
+    "transform": [
+      "es2040"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ahdinosaur/pj.git"
   },
-  "keywords": [
-    "ndpixel",
-    "pixel",
-    "jockey",
-    "vj",
-    "rgb",
-    "hsv"
-  ],
-  "author": "ahdinosaur",
-  "license": "AGPL-3.0",
+  "keywords": [],
+  "author": "Mikey <michael.williams@enspiral.com> (http://dinosaur.is)",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/ahdinosaur/pj/issues"
   },
   "homepage": "https://github.com/ahdinosaur/pj#readme",
   "devDependencies": {
-    "budo": "^4.1.0",
-    "gh-pages": "^0.3.1",
-    "node-dev": "^2.6.2",
-    "tape": "^4.0.0",
-    "watchify": "^3.2.3"
+    "dependency-check": "^2.7.0",
+    "node-dev": "^3.1.3",
+    "npm-run-all": "^4.0.1",
+    "nyc": "^10.1.2",
+    "run-default": "^1.0.0",
+    "standard": "^8.6.0",
+    "tape": "^4.6.3"
   },
   "dependencies": {
-    "brfs": "^1.4.0",
-    "browserify": "^10.2.4",
-    "defined": "^1.0.0",
-    "ecstatic": "^0.8.0",
-    "floodgate": "^0.1.2",
-    "ledgrid-ui": "ahdinosaur/ledgrid-ui",
-    "lodash.assign": "^3.2.0",
-    "ndpixels-opc": "ahdinosaur/ndpixels-opc",
-    "protocol-buffers": "^3.1.2",
-    "rainbow-pixels": "ahdinosaur/rainbow-pixels",
-    "react-render-stream": "ahdinosaur/react-render-stream",
-    "through2": "^2.0.0",
-    "websocket-stream": "^1.5.0"
+    "es2040": "^1.2.3"
   }
 }
