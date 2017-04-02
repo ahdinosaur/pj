@@ -22,7 +22,7 @@ individually addressable RGB LEDs
   - strips (but if longer than 4 meters, needs special way to inject more power at each 4 meter mark),
   - OR grids
 
-### "pixel controllers" (follower, server)
+### "pixel follower" (server)
 
 small independent microcontrollers that receive pixel messages over WiFi and send them to RGB LEDs.
 
@@ -31,18 +31,23 @@ small independent microcontrollers that receive pixel messages over WiFi and sen
 
 _status: will wait on announced Adafruit Feather ESP32 board_.
 
-### "pixel jockey" (leader, client)
+### "pixel leader" (client)
 
 - your laptop,
 - OR you phone!
 
-## scope
+## TODO
 
-- when i want to get started, i can buy some pixels and pixel controllers.
-- when i buy some pixel gear, i know how to assemble and control them from my computer.
-- when the pixels are plugged in but not controlled, they should be pleasing.
-- when i want to control the pixels like a lamp, i can use a few physical controls.
-- when i want to control the pixels like a show, i can use my laptop or phone to set patterns.
+- [x] scaffold a follower simulator using electron
+- [x] scaffold a leader that sends rainbow pixels
+- [x] follower broadcasts up over mdns
+- [ ] follower broadcasts length over mdns
+- [ ] leader is an electron app
+- [ ] leader sees available followers
+- [ ] leader picks the current mode (rainbow)
+- [ ] leader connects to followers
+- [ ] leader arranges pixels for overall scene
+- [ ] leader arranges pixels for each follower
 
 ## license 
 
