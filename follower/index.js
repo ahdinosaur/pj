@@ -5,11 +5,14 @@ const Ndarray = require('ndarray')
 const Bonjour = require('bonjour')
 const getPort = require('getport')
 const toCanvas = require('pixels-canvas')
+const electron = require('electron')
+
+const globalConsole = electron.remote.getGlobal('console')
 
 getPort((err, port) => {
   if (err) throw err
 
-  console.log('port', port)
+  globalConsole.log('port', port)
 
   const bonjour = Bonjour()
   const bonjourService = {
@@ -53,5 +56,4 @@ getPort((err, port) => {
   }).listen(port, (err) => {
     if (err) console.error(err)
   })
-
 })

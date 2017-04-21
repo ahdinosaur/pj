@@ -42,10 +42,11 @@ _status: will wait on announced Adafruit Feather ESP32 board_.
 - [x] scaffold a leader that sends rainbow pixels
 - [x] follower broadcasts up over mdns
 - [ ] follower broadcasts length over mdns
-- [ ] leader is an electron app
-- [ ] leader sees available followers
+- [x] leader is an electron app
+- [x] leader sees available followers
 - [ ] leader picks the current mode (rainbow)
 - [ ] leader connects to followers
+- [ ] leader sends periodic heartbeat messages to followers (special opc message)
 - [ ] leader arranges pixels for overall scene
 - [ ] leader arranges pixels for each follower
 
