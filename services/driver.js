@@ -3,8 +3,8 @@ const Rx = require('rxjs')
 
 module.exports = ServicesDriver
 
-function ServicesDriver (options$) {
-  const serviceBrower$ = options$.switchMap(ServicesBrowser)
+function ServicesDriver (action$) {
+  const serviceBrower$ = ServicesBrowser({ query: { type: 'opc' } })
 
   const services$ = serviceBrower$.map(o => o.services).startWith([])
   const up$ = serviceBrower$.map(o => o.up).filter(Boolean)

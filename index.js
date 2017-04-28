@@ -19,7 +19,7 @@ app.on('window-all-closed', function () {
   }
 })
 
-ipcMain.on('create-follower', createFollower)
+ipcMain.on('start-follower', createFollower)
 
 function createLeader () {
   createWindow('./leader')

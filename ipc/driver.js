@@ -1,18 +1,24 @@
 const Rx = require('rxjs')
 const { ipcRenderer } = require('electron')
+const { propEq } = require('ramda')
+
+const { IPC } = require('./actions')
 
 module.exports = ipcDriver
 
 const listenChannels = []
 
-function ipcDriver (ipcMessage$) {
+function ipcDriver (action$) {
+  console.log('action$', action$.forEach(console.log.bind(console)))
+  const ipcMessage$ = action$
+    .filter(propEq('type', IPC))
+
   ipcMessage$.subscribe(message => {
     const { channel, args = [] } = message
-      console.log('sending!', channel, ...args)
     ipcRenderer.send(channel, ...args)
   })
 
-  return Rx.Observable.create(observer => {
+  const ipc$ = Rx.Observable.create(observer => {
     const listeners = listenChannels.map(channel => {
       const listener = (evt, ...args) => {
         observer.next({ channel, args })
@@ -28,4 +34,8 @@ function ipcDriver (ipcMessage$) {
       })
     }
   })
+
+  return {
+    //ipc$
+  }
 }

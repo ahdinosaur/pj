@@ -54,6 +54,7 @@
     "pull-opc": "^1.0.1",
     "pull-stream": "^3.5.0",
     "rainbow-pixels": "^5.0.0",
+    "ramda": "^0.23.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-fela": "^4.3.2",
