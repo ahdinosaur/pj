@@ -1,7 +1,17 @@
 const Bonjour = require('bonjour')
 const Rx = require('rxjs')
 
-module.exports = ServicesBrowser
+module.exports = ServicesDriver
+
+function ServicesDriver (options$) {
+  const serviceBrower$ = options$.switchMap(ServicesBrowser)
+
+  const services$ = serviceBrower$.map(o => o.services).startWith([])
+  const up$ = serviceBrower$.map(o => o.up).filter(Boolean)
+  const down$ = serviceBrower$.map(o => o.down).filter(Boolean)
+
+  return { services$, up$, down$ }
+}
 
 function ServicesBrowser (options) {
   const {
@@ -35,9 +45,5 @@ function ServicesBrowser (options) {
     }
   })
 
-  const services$ = serviceBrower$.map(o => o.services).startWith([])
-  const up$ = serviceBrower$.map(o => o.up).filter(Boolean)
-  const down$ = serviceBrower$.map(o => o.down).filter(Boolean)
-
-  return { services$, up$, down$ }
+  return serviceBrower$
 }

@@ -30,15 +30,6 @@ function sendPixels (options) {
     connect({ port, host }, (err, stream) => {
       if (err) return cb(err)
 
-      pull(
-        pull.infinite(rainbowPixels({
-          shape: [10]
-        })),
-        pull.map(convert('hsl', 'rgb')),
-        pixelsToOpc(channel),
-        delay(100),
-        stream,
-        pull.drain(null, cb)
       )
     })
   }

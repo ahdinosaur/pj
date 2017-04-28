@@ -48,6 +48,7 @@
     "ndarray": "^1.0.18",
     "ndpixels-convert": "^1.1.0",
     "pixels-canvas": "^1.1.0",
+    "pixels-gl": "^1.0.0",
     "pixels-opc": "^4.0.2",
     "pull-delay": "^1.0.1",
     "pull-opc": "^1.0.1",
