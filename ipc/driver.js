@@ -9,7 +9,6 @@ module.exports = ipcDriver
 const listenChannels = []
 
 function ipcDriver (action$) {
-  console.log('action$', action$.forEach(console.log.bind(console)))
   const ipcMessage$ = action$
     .filter(propEq('type', IPC))
 
@@ -36,6 +35,6 @@ function ipcDriver (action$) {
   })
 
   return {
-    //ipc$
+    ipc$
   }
 }
