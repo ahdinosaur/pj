@@ -13,12 +13,10 @@ function ServicesDriver (action$) {
   return { services$, up$, down$ }
 }
 
-function ServicesBrowser (options) {
-  const {
-    interval = 1000,
-    query = {},
-    multicast = {}
-  } = options
+function ServicesBrowser (action$) {
+  const interval = 1000
+  const multicast = {}
+  const query = { type: 'opc' }
 
   const bonjour = Bonjour(multicast)
 
@@ -29,7 +27,6 @@ function ServicesBrowser (options) {
     browser.on('down', down => next({ down }))
 
     const timeout = setInterval(() => {
-      console.log('update')
       browser.update()
     }, interval)
 

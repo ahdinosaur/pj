@@ -3,7 +3,7 @@ const { Observable } = require('rxjs')
 
 module.exports = ScenesDriver
 
-const fps = 10
+const fps = 60
 const interval = 1000 / fps
 
 const scenes = {

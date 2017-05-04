@@ -16,11 +16,12 @@ function RainbowScene ({ params$, tick$ }) {
       const hslToRgb = convert('hsl', 'rgb')
 
       return tick$
-        .map(generator())
+        .map(generator)
         .map(pixels => {
-          const nextData = new Uint8Array(pixels.size)
-          const nextPixels = Ndarray(nextData, pixels.shape, pixels.stride)
-          return hslToRgb(pixels, nextPixels)
+          var nextData = new Uint8Array(pixels.size)
+          var nextPixels = Ndarray(nextData, pixels.shape, pixels.stride)
+          hslToRgb(pixels, nextPixels)
+          return nextPixels
         })
     })
 }

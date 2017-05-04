@@ -1,5 +1,6 @@
 const pull = require('pull-stream')
-const createServer = require('pull-net/server')
+const toPull = require('stream-to-pull-stream')
+const { createServer } = require('net')
 const createOpcParser = require('pull-opc/decoder')
 const Ndarray = require('ndarray')
 const Bonjour = require('bonjour')
@@ -41,19 +42,21 @@ getPort((err, port) => {
   const pixelsToCanvas = toCanvas(canvas)
 
   createServer(stream => {
+    stream.setNoDelay()
     pull(
-      stream.source,
+      toPull.source(stream),
       createOpcParser(),
       pull.map(message => {
         // message.channel
         // message.command
-        var pixels = Ndarray(message.data, [10, 3])
+        var pixels = Ndarray(message.data, [64, 64, 3])
         pixels.format = 'rgb'
         return pixels
       }),
       pull.drain(pixelsToCanvas)
     )
   }).listen(port, (err) => {
-    if (err) console.error(err)
+    if (err) globalConsole.error(err)
+    else globalConsole.log('listening!')
   })
 })
