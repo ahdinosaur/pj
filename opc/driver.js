@@ -10,10 +10,7 @@ module.exports = ipcDriver
 
 const listenChannels = []
 
-function ipcDriver (action$) {
-  const sendOpc$ = action$
-    .filter(propEq('type', SEND_OPC))
-
+function ipcDriver ({ sendOpc$ }) {
   var opcSockets = {}
 
   sendOpc$.subscribe(sendOpc)

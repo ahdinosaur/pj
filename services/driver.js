@@ -3,7 +3,7 @@ const Rx = require('rxjs')
 
 module.exports = ServicesDriver
 
-function ServicesDriver (action$) {
+function ServicesDriver () {
   const serviceBrower$ = ServicesBrowser({ query: { type: 'opc' } })
 
   const services$ = serviceBrower$.map(o => o.services).startWith([])
@@ -13,7 +13,7 @@ function ServicesDriver (action$) {
   return { services$, up$, down$ }
 }
 
-function ServicesBrowser (action$) {
+function ServicesBrowser () {
   const interval = 1000
   const multicast = {}
   const query = { type: 'opc' }

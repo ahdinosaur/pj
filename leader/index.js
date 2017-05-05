@@ -27,7 +27,7 @@ const modules = [
 const renderer = createRenderer()
 const mountNode = document.getElementById('app-styles')
 
-const Container = ({ services, sceneList, currentScene, sendOpc, startFollower }) => {
+const Container = ({ services, sceneList, currentScene, sendOpc, ipc }) => {
   return h(FelaProvider, { renderer, mountNode }, [
     h('div', { className: 'main' }, [
       // show services
@@ -43,6 +43,13 @@ const Container = ({ services, sceneList, currentScene, sendOpc, startFollower }
 
   function send (pixels) {
     sendOpc({ pixels, services })
+  }
+
+
+  function startFollower ()  {
+    ipc({
+      channel: 'start-follower'
+    })
   }
 }
 

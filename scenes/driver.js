@@ -11,7 +11,7 @@ const scenes = {
 }
 const sceneList = keys(scenes)
 
-function ScenesDriver (action$) {
+function ScenesDriver () {
   const tick$ = Observable.interval(interval)
 
   const sceneList$ = Observable.of(sceneList)

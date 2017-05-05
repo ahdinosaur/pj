@@ -6,12 +6,7 @@ const ipc = ({ channel, args = [] }) => ({
   args
 })
 
-const startFollower = () => ipc({
-  channel: 'start-follower'
-})
-
 module.exports = {
   IPC,
-  ipc,
-  startFollower
+  ipc
 }
