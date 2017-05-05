@@ -16,7 +16,7 @@ insertCss(`
 `)
 
 const Resux = require('../lib/resux')
-
+const Scene = require('../scenes/component')
 const modules = [
   require('../services'),
   require('../scenes'),
@@ -43,32 +43,6 @@ const Container = ({ services, sceneList, currentScene, sendOpc, startFollower }
 
   function send (pixels) {
     sendOpc({ pixels, services })
-  }
-}
-
-class Scene extends React.Component {
-  componentDidUpdate () {
-    const pixels = this.refs.surface.capture()
-    this.props.send(pixels)
-  }
-
-  render () {
-    const {
-      width = 64,
-      height = 64,
-      pixels
-    } = this.props
-
-    return h('div', { className: 'scene' }, [
-      h(Surface, {
-        ref: 'surface',
-        width,
-        height,
-        webglContextAttributes: { preserveDrawingBuffer: true }
-      }, [
-        h(PixelsGl, { pixels })
-      ])
-    ])
   }
 }
 

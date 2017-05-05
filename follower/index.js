@@ -5,8 +5,27 @@ const createOpcParser = require('pull-opc/decoder')
 const Ndarray = require('ndarray')
 const Bonjour = require('bonjour')
 const getPort = require('getport')
-const toCanvas = require('pixels-canvas')
+//const toCanvas = require('pixels-canvas')
 const electron = require('electron')
+
+const React = require('react')
+const { render } = require('react-dom')
+const h = require('react-hyperscript')
+const PixelsGl = require('pixels-gl')
+const { Surface } = require('gl-react-dom')
+const insertCss = require('insert-css')
+const createCid = require('cuid')
+
+const Scene = require('../scenes/component')
+
+insertCss(`
+   html, body, .main, canvas {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }      
+`)
 
 const globalConsole = electron.remote.getGlobal('console')
 
@@ -15,9 +34,10 @@ getPort((err, port) => {
 
   globalConsole.log('port', port)
 
+  const cid = createCid()
   const bonjour = Bonjour()
   const bonjourService = {
-    name: 'pj',
+    name: 'pj-' + cid,
     port,
     type: 'opc',
     protocol: 'tcp'
@@ -49,7 +69,7 @@ getPort((err, port) => {
       pull.map(message => {
         // message.channel
         // message.command
-        var pixels = Ndarray(message.data, [64, 64, 3])
+        var pixels = Ndarray(message.data, [128, 128, 3])
         pixels.format = 'rgb'
         return pixels
       }),
@@ -60,3 +80,13 @@ getPort((err, port) => {
     else globalConsole.log('listening!')
   })
 })
+
+function toCanvas (canvas) {
+  const app = document.querySelector('#app')
+  return pixels => {
+    return render(
+      h(Scene, { pixels }),
+      app
+    )
+  }
+}
