@@ -7,9 +7,7 @@ module.exports = ipcDriver
 const listenChannels = []
 
 function ipcDriver ({ ipc$ }) {
-  console.log('sub-ing ipc', ipc$)
   ipc$.subscribe(message => {
-    console.log('ipc', message)
     const { channel, args = [] } = message
     ipcRenderer.send(channel, ...args)
   })
@@ -24,7 +22,7 @@ function ipcDriver ({ ipc$ }) {
     })
 
     return () => {
-      channels.forEach((channel, index) => {
+      listenChannels.forEach((channel, index) => {
         const listener = listeners[index]
         ipcRenderer.removeListener(channel, listener)
       })

@@ -1,46 +1,67 @@
 const Bonjour = require('bonjour')
 const Rx = require('rxjs')
+const { mapObjIndexed, isNil, assoc, dissoc } = require('ramda')
+const net = require('net')
+
+const { UP, DOWN } = require('./actions')
 
 module.exports = ServicesDriver
 
-function ServicesDriver () {
-  const serviceBrower$ = ServicesBrowser({ query: { type: 'opc' } })
-
-  const services$ = serviceBrower$.map(o => o.services).startWith([])
-  const up$ = serviceBrower$.map(o => o.up).filter(Boolean)
-  const down$ = serviceBrower$.map(o => o.down).filter(Boolean)
-
-  return { services$, up$, down$ }
-}
-
-function ServicesBrowser () {
+function ServicesDriver (actions, subjects) {
   const interval = 1000
   const multicast = {}
   const query = { type: 'opc' }
 
   const bonjour = Bonjour(multicast)
+  const browser = bonjour.find(query)
 
-  const serviceBrower$ = Rx.Observable.create(observer => {
-    const browser = bonjour.find(query)
+  const timeout = setInterval(() => {
+    browser.update()
+  }, interval)
 
-    browser.on('up', up => next({ up }))
-    browser.on('down', down => next({ down }))
+  browser.on('up', service => subjects.serviceUp$.next(service))
+  browser.on('down', service => subjects.serviceDown$.next(service))
 
-    const timeout = setInterval(() => {
-      browser.update()
-    }, interval)
+  // TODO change sockets into a stream
+  const sockets = {}
 
-    return dispose
-
-    function next ({ up, down }) {
-      const { services } = browser
-      observer.next({ services, up, down })
+  const services$ = Rx.Observable.merge(
+    actions.serviceUp$, actions.serviceDown$
+  )
+  .scan((sofar, action) => {
+    const { type, service } = action
+    const { fqdn } = service
+    switch (type) {
+      case UP:
+        return assoc(fqdn, service, sofar)
+      case DOWN:
+        if (sockets[fqdn]) delete sockets[fqdn]
+        return dissoc(fqdn, sofar)
+      default:
+        throw new Error('unexpected type ' + type)
+    }
+  }, {})
+  .startWith({})
+  .map(mapObjIndexed((service, key) => {
+    var socket = sockets[key]
+    if (isNil(socket)) {
+      const { port, addresses } = service
+      const address = addresses[0]
+      
+      socket = net.connect(port, address)
+      socket.setNoDelay()
+      socket.on('error', () => {
+        subjects.serviceDown$.next(service)
+      })
+      socket.on('close', () => {
+        subjects.serviceDown$.next(service)
+      })
     }
 
-    function dispose () {
-      clearInterval(timeout)
-    }
-  })
+    return assoc('socket', socket, service)
+  }))
 
-  return serviceBrower$
+  return {
+    services$
+  }
 }

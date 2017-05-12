@@ -17,6 +17,7 @@ insertCss(`
 
 const Resux = require('../lib/resux')
 const Scene = require('../scenes/component')
+const Services = require('../services/component')
 const modules = [
   require('../services'),
   require('../scenes'),
@@ -31,7 +32,7 @@ const Container = ({ services, sceneList, currentScene, sendOpc, ipc }) => {
   return h(FelaProvider, { renderer, mountNode }, [
     h('div', { className: 'main' }, [
       // show services
-      h('div', { className: 'services' }, JSON.stringify(services, null, 2)),
+      h(Services, { services }),
       // show scenes
       h('div', { className: 'scenes' }, JSON.stringify(sceneList, null, 2)),
       // show scene
@@ -47,9 +48,7 @@ const Container = ({ services, sceneList, currentScene, sendOpc, ipc }) => {
 
 
   function startFollower ()  {
-    ipc({
-      channel: 'start-follower'
-    })
+    ipc({ channel: 'start-follower' })
   }
 }
 

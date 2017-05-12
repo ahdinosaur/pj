@@ -1,4 +1,4 @@
 module.exports = {
-  actions: {},
+  actions: require('./actions'),
   driver: require('./driver')
 }
