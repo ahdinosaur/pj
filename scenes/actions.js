@@ -1,6 +1,6 @@
 const SET_SCENE = Symbol('setScene')
 
-const setScene = ({ sceneId }) => ({
+const setScene = (sceneId) => ({
   type: SET_SCENE,
   sceneId
 })

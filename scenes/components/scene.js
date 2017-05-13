@@ -16,8 +16,12 @@ class Scene extends React.Component {
     const {
       width = 128,
       height = 128,
-      pixels
+      scene
     } = this.props
+
+    const pixels = typeof scene === 'object'
+      ? h(PixelsGl, { pixels: scene })
+      : h(scene, this.props)
 
     return h('div', { className: 'scene' }, [
       h(Surface, {
@@ -26,7 +30,7 @@ class Scene extends React.Component {
         height,
         webglContextAttributes: { preserveDrawingBuffer: true }
       }, [
-        h(PixelsGl, { pixels })
+        pixels
       ])
     ])
   }

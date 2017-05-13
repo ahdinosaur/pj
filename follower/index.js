@@ -16,7 +16,7 @@ const { Surface } = require('gl-react-dom')
 const insertCss = require('insert-css')
 const createCid = require('cuid')
 
-const Scene = require('../scenes/component')
+const Scene = require('../scenes/components/scene')
 
 insertCss(`
    html, body, .main, canvas {
