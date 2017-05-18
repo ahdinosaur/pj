@@ -1,5 +1,7 @@
 const { keys } = Object
 const { Observable } = require('rxjs')
+const { default: Form } = require('react-jsonschema-form')
+const h = require('react-hyperscript')
 
 module.exports = ScenesDriver
 
@@ -8,31 +10,47 @@ const interval = 1000 / fps
 
 const scenes = {
   rainbow: require('./rainbow'),
-  raindowGl: require('./rainbow-gl')
+  rgb: require('./rgb')
 }
 const sceneList = keys(scenes)
 
-function ScenesDriver (actions) {
-  const { setScene$ } = actions
+function ScenesDriver (actions, subjects) {
+  const { setScene$, setParams$ } = actions
   const tick$ = Observable.interval(interval)
 
   const sceneList$ = Observable.of(scenes)
-  const currentSceneId$ = setScene$
+  const currentScene$ = setScene$
     .map(action => action.sceneId)
     .startWith('rainbow')
-
-  const currentScene$ = currentSceneId$.switchMap(sceneId => {
-    const params$ = Observable.of({
-      shape: [128, 128]
+    .map(sceneId => scenes[sceneId])
+    //.share()
+    //.publishReplay(1)
+  const currentParams$ = currentScene$.switchMap(scene => {
+    return setParams$
+      .startWith(scene.initialValues)
+  })
+  const currentParamsForm$ = Observable.combineLatest(
+    currentScene$,
+    currentParams$
+  )
+    .map(([scene, params]) => {
+      return h(Form, {
+        schema: scene.schema,
+        uiSchema: scene.uiSchema,
+        formData: params,
+        onChange: ({ formData: values }) => {
+          subjects.setParams$.next(values)
+        }
+      })
     })
-    const scene = scenes[sceneId]({ params$, tick$ })
 
-    return scene
+  const currentSceneOutput$ = currentScene$.switchMap(scene => {
+    return scene({ params$: currentParams$, tick$ })
   })
 
   return {
     sceneList$,
-    currentSceneId$,
-    currentScene$
+    currentParamsForm$,
+    currentSceneOutput$
   }
 }

@@ -1,11 +1,15 @@
 const React = require('react')
 const h = require('react-hyperscript')
-const PixelsGl = require('pixels-gl')
 const { Surface } = require('gl-react-dom')
+
+function SceneContainer (props) {
+  if (props.scene == null) return null
+  else return h(Scene, props)
+}
 
 class Scene extends React.Component {
   componentDidUpdate () {
-    const { send, surface } = this.props
+    const { send, scene } = this.props
     if (send) {
       const pixels = this.refs.surface.capture()
       this.props.send(pixels)
@@ -16,12 +20,10 @@ class Scene extends React.Component {
     const {
       width = 128,
       height = 128,
-      scene
+      scene,
+      params,
+      paramsForm
     } = this.props
-
-    const pixels = typeof scene === 'object'
-      ? h(PixelsGl, { pixels: scene })
-      : h(scene, this.props)
 
     return h('div', { className: 'scene' }, [
       h(Surface, {
@@ -30,10 +32,11 @@ class Scene extends React.Component {
         height,
         webglContextAttributes: { preserveDrawingBuffer: true }
       }, [
-        pixels
-      ])
+        scene
+      ]),
+      paramsForm
     ])
   }
 }
 
-module.exports = Scene
+module.exports = SceneContainer

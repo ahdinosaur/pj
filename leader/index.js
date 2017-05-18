@@ -29,7 +29,7 @@ const modules = [
 const renderer = createRenderer()
 const mountNode = document.getElementById('app-styles')
 
-const Container = ({ services, sceneList, setScene, currentScene, sendOpc, ipc }) => {
+const Container = ({ services, sceneList, setScene, currentSceneOutput, currentParamsForm, sendOpc, ipc }) => {
   return h(FelaProvider, { renderer, mountNode }, [
     h('div', { className: 'main' }, [
       // show services
@@ -37,7 +37,7 @@ const Container = ({ services, sceneList, setScene, currentScene, sendOpc, ipc }
       // show scenes
       h(SceneList, { sceneList, setScene }),
       // show scene
-      h(Scene, { scene: currentScene, send }),
+      h(Scene, { scene: currentSceneOutput, paramsForm: currentParamsForm, send }),
       // open new followerS
       h('button', { className: 'follower', onClick: startFollower }, 'start follower!')
     ]),

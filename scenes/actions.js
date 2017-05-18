@@ -5,7 +5,10 @@ const setScene = (sceneId) => ({
   sceneId
 })
 
+const setParams = (params) => params
+
 module.exports = {
   SET_SCENE,
-  setScene
+  setScene,
+  setParams
 }

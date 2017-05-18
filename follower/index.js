@@ -16,7 +16,7 @@ const { Surface } = require('gl-react-dom')
 const insertCss = require('insert-css')
 const createCid = require('cuid')
 
-const Scene = require('../scenes/components/scene')
+const Pixels = require('../scenes/components/pixels')
 
 insertCss(`
    html, body, .main, canvas {
@@ -85,7 +85,7 @@ function toCanvas (canvas) {
   const app = document.querySelector('#app')
   return pixels => {
     return render(
-      h(Scene, { pixels }),
+      h(Pixels, { pixels }),
       app
     )
   }
