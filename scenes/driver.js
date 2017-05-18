@@ -14,8 +14,7 @@ const scenes = {
 }
 const sceneList = keys(scenes)
 
-function ScenesDriver (actions, subjects) {
-  const { setScene$, setParams$ } = actions
+function ScenesDriver ({ setScene$, setParams$ }) {
   const tick$ = Observable.interval(interval)
 
   const sceneList$ = Observable.of(scenes)
@@ -38,7 +37,7 @@ function ScenesDriver (actions, subjects) {
         uiSchema: scene.uiSchema,
         formData: params,
         onChange: ({ formData: values }) => {
-          subjects.setParams$.next(values)
+          setParams$.next(values)
         }
       })
     })

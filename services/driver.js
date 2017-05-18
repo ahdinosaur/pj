@@ -5,7 +5,7 @@ const net = require('net')
 
 module.exports = ServicesDriver
 
-function ServicesDriver (actions, subjects) {
+function ServicesDriver ({ up$, down$ }) {
   const interval = 1000
   const multicast = {}
   const query = { type: 'opc' }
@@ -17,15 +17,15 @@ function ServicesDriver (actions, subjects) {
     browser.update()
   }, interval)
 
-  browser.on('up', service => subjects.serviceUp$.next(service))
-  browser.on('down', service => subjects.serviceDown$.next(service))
+  browser.on('up', service => up$.next(service))
+  browser.on('down', service => down$.next(service))
 
   // TODO change sockets into a stream
   const sockets = {}
 
   const services$ = Rx.Observable.merge(
-    actions.up$.map(service => ({ action: 'up', service })),
-    actions.down$.map(service => ({ action: 'down', service }))
+    up$.map(service => ({ action: 'up', service })),
+    down$.map(service => ({ action: 'down', service }))
   )
   .scan((sofar, message) => {
     const { action, service } = message
@@ -50,10 +50,10 @@ function ServicesDriver (actions, subjects) {
       socket = net.connect(port, address)
       socket.setNoDelay()
       socket.on('error', () => {
-        subjects.up$.next(service)
+        up$.next(service)
       })
       socket.on('close', () => {
-        subjects.down$.next(service)
+        down$.next(service)
       })
     }
 
