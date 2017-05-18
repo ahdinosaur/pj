@@ -20,7 +20,6 @@ function ScenesDriver (actions, subjects) {
 
   const sceneList$ = Observable.of(scenes)
   const currentScene$ = setScene$
-    .map(action => action.sceneId)
     .startWith('rainbow')
     .map(sceneId => scenes[sceneId])
     //.share()

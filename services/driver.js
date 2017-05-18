@@ -3,8 +3,6 @@ const Rx = require('rxjs')
 const { mapObjIndexed, isNil, assoc, dissoc } = require('ramda')
 const net = require('net')
 
-const { UP, DOWN } = require('./actions')
-
 module.exports = ServicesDriver
 
 function ServicesDriver (actions, subjects) {
@@ -26,15 +24,16 @@ function ServicesDriver (actions, subjects) {
   const sockets = {}
 
   const services$ = Rx.Observable.merge(
-    actions.serviceUp$, actions.serviceDown$
+    actions.up$.map(service => ({ action: 'up', service })),
+    actions.down$.map(service => ({ action: 'down', service }))
   )
-  .scan((sofar, action) => {
-    const { type, service } = action
+  .scan((sofar, message) => {
+    const { action, service } = message
     const { fqdn } = service
-    switch (type) {
-      case UP:
+    switch (action) {
+      case 'up':
         return assoc(fqdn, service, sofar)
-      case DOWN:
+      case 'down':
         if (sockets[fqdn]) delete sockets[fqdn]
         return dissoc(fqdn, sofar)
       default:
@@ -51,10 +50,10 @@ function ServicesDriver (actions, subjects) {
       socket = net.connect(port, address)
       socket.setNoDelay()
       socket.on('error', () => {
-        subjects.serviceDown$.next(service)
+        subjects.up$.next(service)
       })
       socket.on('close', () => {
-        subjects.serviceDown$.next(service)
+        subjects.down$.next(service)
       })
     }
 

@@ -2,6 +2,7 @@ const Rx = require('rxjs')
 const { ipcRenderer } = require('electron')
 
 const { propEq } = require('ramda')
+
 module.exports = ipcDriver
 
 const listenChannels = []
