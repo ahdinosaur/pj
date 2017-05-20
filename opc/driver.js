@@ -1,4 +1,4 @@
-const Rx = require('rxjs')
+const xs = require('xstream').default
 const { propEq } = require('ramda')
 const { encodePixels } = require('pixels-opc/codec')
 const { encodePixelsMessage } = require('opc/codec')
@@ -12,10 +12,12 @@ const listenChannels = []
 function ipcDriver ({ sendOpc$ }) {
   var opcSockets = {}
 
-  sendOpc$.subscribe(sendOpc)
+  sendOpc$.subscribe({
+    next: sendOpc
+  })
 
   return {
-    opc$: Rx.Observable.empty()
+    opc$: xs.empty()
   }
 
   function sendOpc ({ services, pixels }) {

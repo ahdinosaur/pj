@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "test:deps": "dependency-check . && dependency-check . --extra --no-dev -i es2040",
+    "test:deps": "dependency-check . leader follower && dependency-check . leader follower --extra --no-dev -i es2040",
     "test:lint": "standard",
     "test:node": "NODE_ENV=test run-default tape test/*.js --",
     "test:coverage": "NODE_ENV=test nyc npm run test:node",
@@ -47,24 +47,19 @@
     "gl-react-dom": "^3.0.0",
     "insert-css": "^2.0.0",
     "ndarray": "^1.0.18",
-    "ndpixels-convert": "^1.1.0",
     "opc": "ahdinosaur/js-opc#codec",
-    "pixels-canvas": "^1.1.0",
     "pixels-gl": "^1.0.0",
     "pixels-opc": "^4.0.2",
-    "pull-delay": "^1.0.1",
-    "pull-net": "^1.0.0",
     "pull-opc": "^1.0.1",
     "pull-stream": "^3.5.0",
-    "rainbow-pixels": "^5.0.0",
     "ramda": "^0.23.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-fela": "^4.3.2",
     "react-hyperscript": "^3.0.0",
     "react-jsonschema-form": "^0.48.2",
-    "rx-react-container": "^0.2.1",
-    "rxjs": "^5.3.0",
-    "stream-to-pull-stream": "^1.7.2"
+    "stream-to-pull-stream": "^1.7.2",
+    "xstream": "^10.8.0",
+    "xstream-connect": "^0.2.3"
   }
 }

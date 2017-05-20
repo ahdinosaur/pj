@@ -1,11 +1,11 @@
 const Bonjour = require('bonjour')
-const Rx = require('rxjs')
+const xs = require('xstream').default
 const { mapObjIndexed, isNil, assoc, dissoc } = require('ramda')
 const net = require('net')
 
 module.exports = ServicesDriver
 
-function ServicesDriver ({ up$, down$ }) {
+function ServicesDriver ({ up$, down$ }, { up, down }) {
   const interval = 1000
   const multicast = {}
   const query = { type: 'opc' }
@@ -17,17 +17,17 @@ function ServicesDriver ({ up$, down$ }) {
     browser.update()
   }, interval)
 
-  browser.on('up', service => up$.next(service))
-  browser.on('down', service => down$.next(service))
+  browser.on('up', service => up(service))
+  browser.on('down', service => down(service))
 
   // TODO change sockets into a stream
   const sockets = {}
 
-  const services$ = Rx.Observable.merge(
+  const services$ = xs.merge(
     up$.map(service => ({ action: 'up', service })),
     down$.map(service => ({ action: 'down', service }))
   )
-  .scan((sofar, message) => {
+  .fold((sofar, message) => {
     const { action, service } = message
     const { fqdn } = service
     switch (action) {
@@ -50,10 +50,10 @@ function ServicesDriver ({ up$, down$ }) {
       socket = net.connect(port, address)
       socket.setNoDelay()
       socket.on('error', () => {
-        up$.next(service)
+        up(service)
       })
       socket.on('close', () => {
-        down$.next(service)
+        down(service)
       })
     }
 

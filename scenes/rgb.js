@@ -1,6 +1,6 @@
 const h = require('react-hyperscript')
 const { Shaders, Node, GLSL } = require('gl-react')
-const Rx = require('rxjs')
+const xs = require('xstream')
 const Ndarray = require('ndarray')
 const { merge } = require('ramda')
 
@@ -50,9 +50,10 @@ RgbScene.initialValues = {
 
 function RgbScene ({ params$, tick$ }) {
   return params$
-    .switchMap(params => tick$
+    .map(params => tick$
       .map((start) => h(Rgb, params))
     )
+    .flatten()
 }
 
 const shaders = Shaders.create({

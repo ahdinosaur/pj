@@ -1,5 +1,5 @@
 const { keys } = Object
-const { Observable } = require('rxjs')
+const xs = require('xstream').default
 const { default: Form } = require('react-jsonschema-form')
 const h = require('react-hyperscript')
 
@@ -14,37 +14,40 @@ const scenes = {
 }
 const sceneList = keys(scenes)
 
-function ScenesDriver ({ setScene$, setParams$ }) {
-  const tick$ = Observable.interval(interval)
+function ScenesDriver ({ setScene$, setParams$ }, { setParams }) {
+  const tick$ = xs.periodic(interval)
 
-  const sceneList$ = Observable.of(scenes)
+  const sceneList$ = xs.of(scenes)
   const currentScene$ = setScene$
     .startWith('rainbow')
     .map(sceneId => scenes[sceneId])
-    //.share()
-    //.publishReplay(1)
-  const currentParams$ = currentScene$.switchMap(scene => {
-    return setParams$
-      .startWith(scene.initialValues)
-  })
-  const currentParamsForm$ = Observable.combineLatest(
-    currentScene$,
-    currentParams$
-  )
+  const currentParams$ = currentScene$
+    .map(scene => {
+      return setParams$
+        .startWith(scene.initialValues)
+    })
+    .flatten()
+    .remember()
+  const currentParamsForm$ = xs.combine(
+      currentScene$,
+      currentParams$
+    )
     .map(([scene, params]) => {
       return h(Form, {
         schema: scene.schema,
         uiSchema: scene.uiSchema,
         formData: params,
         onChange: ({ formData: values }) => {
-          setParams$.next(values)
+          setParams(values)
         }
       })
     })
 
-  const currentSceneOutput$ = currentScene$.switchMap(scene => {
-    return scene({ params$: currentParams$, tick$ })
-  })
+  const currentSceneOutput$ = currentScene$
+    .map(scene => {
+      return scene({ params$: currentParams$, tick$ })
+    })
+    .flatten()
 
   return {
     sceneList$,
