@@ -1,4 +1,4 @@
-const Rx = require('rxjs')
+const xs = require('xstream').default
 const { ipcRenderer } = require('electron')
 
 const { propEq } = require('ramda')
@@ -13,16 +13,18 @@ function ipcDriver ({ ipc$ }) {
     ipcRenderer.send(channel, ...args)
   })
 
-  const ipcOut$ = Rx.Observable.create(observer => {
-    const listeners = listenChannels.map(channel => {
-      const listener = (evt, ...args) => {
-        observer.next({ channel, args })
-      }
-      ipcRenderer.on(channel, listener)
-      return listener
-    })
+  const ipcOut$ = xs.create({
+    start: observer => {
+      const listeners = listenChannels.map(channel => {
+        const listener = (evt, ...args) => {
+          observer.next({ channel, args })
+        }
+        ipcRenderer.on(channel, listener)
+        return listener
+      })
+    },
 
-    return () => {
+    stop: () => {
       listenChannels.forEach((channel, index) => {
         const listener = listeners[index]
         ipcRenderer.removeListener(channel, listener)

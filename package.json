@@ -63,8 +63,9 @@
     "react-fela": "^4.3.2",
     "react-hyperscript": "^3.0.0",
     "react-jsonschema-form": "^0.48.2",
-    "rx-react-container": "^0.2.1",
     "rxjs": "^5.3.0",
-    "stream-to-pull-stream": "^1.7.2"
+    "stream-to-pull-stream": "^1.7.2",
+    "xstream": "^10.8.0",
+    "xstream-connect": "^0.2.3"
   }
 }

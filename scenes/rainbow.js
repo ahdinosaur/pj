@@ -1,6 +1,5 @@
 const h = require('react-hyperscript')
 const { Shaders, Node, GLSL } = require('gl-react')
-const Rx = require('rxjs')
 const { merge } = require('ramda')
 
 module.exports = RainbowScene
@@ -10,19 +9,20 @@ RainbowScene.initialValues = {}
 
 function RainbowScene ({ params$, tick$ }) {
   return params$
-    .switchMap(params => {
+    .map(params => {
       const numSteps = 72
 
       return tick$
-        .scan((sofar, next) => {
+        .fold((sofar, next) => {
           const step = 1 / numSteps
           return (sofar + step) % 1
-        })
+        }, 0)
         .map((start) => {
           const props = merge(params, { start })
           return h(Rainbow, props)
         })
     })
+    .flatten()
 }
 
 const shaders = Shaders.create({
