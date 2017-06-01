@@ -5,18 +5,13 @@ const createOpcParser = require('pull-opc/decoder')
 const Ndarray = require('ndarray')
 const Bonjour = require('bonjour')
 const getPort = require('getport')
-//const toCanvas = require('pixels-canvas')
 const electron = require('electron')
-
-const React = require('react')
-const { render } = require('react-dom')
-const h = require('react-hyperscript')
+const Regl = require('regl')
 const PixelsGl = require('pixels-gl')
-const { Surface } = require('gl-react-dom')
 const insertCss = require('insert-css')
 const createCid = require('cuid')
 
-const Pixels = require('../scenes/components/pixels')
+const globalConsole = electron.remote.getGlobal('console')
 
 insertCss(`
    html, body, .main, canvas {
@@ -27,8 +22,11 @@ insertCss(`
   }      
 `)
 
-const globalConsole = electron.remote.getGlobal('console')
+const regl = Regl()
+const pixelsGl = PixelsGl(regl)
 
+
+var pixels
 getPort((err, port) => {
   if (err) throw err
 
@@ -53,14 +51,6 @@ getPort((err, port) => {
 
   bonjour.publish(bonjourService)
 
-  var canvas = document.createElement('canvas')
-  document.body.style = document.documentElement.style = canvas.style = 'padding: 0; margin: 0; height: 100%; width: 100%'
-  canvas.height = document.body.clientHeight
-  canvas.width = document.body.clientWidth
-  document.body.appendChild(canvas)
-
-  const pixelsToCanvas = toCanvas(canvas)
-
   createServer(stream => {
     stream.setNoDelay()
     pull(
@@ -73,7 +63,9 @@ getPort((err, port) => {
         pixels.format = 'rgb'
         return pixels
       }),
-      pull.drain(pixelsToCanvas)
+      pull.drain(nextPixels => {
+        pixels = nextPixels
+      })
     )
   }).listen(port, (err) => {
     if (err) globalConsole.error(err)
@@ -81,12 +73,6 @@ getPort((err, port) => {
   })
 })
 
-function toCanvas (canvas) {
-  const app = document.querySelector('#app')
-  return pixels => {
-    return render(
-      h(Pixels, { pixels }),
-      app
-    )
-  }
-}
+regl.frame(({ time }) => {
+  pixelsGl({ pixels })
+})
