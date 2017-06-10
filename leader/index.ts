@@ -1,9 +1,26 @@
-const xs = require('xstream').default
-const { run } = require('@cycle/run')
-const { div, label, input, hr, h1 } = require('@cycle/dom')
-const { makeFelaDomDriver, createComponent } = require('cycle-fela')
+import xs, { Stream } from 'xstream'
+import { run, Sources as RunSources } from '@cycle/run'
+import { div, makeDOMDriver, DOMSource, VNode } from '@cycle/dom'
+import isolate from '@cycle/isolate'
+import onionify, { StateSource } from 'cycle-onionify'
 const insertCss = require('insert-css')
-const onionify = require('cycle-onionify').default
+
+import { Driver as ServicesDriver, Component as ServicesComponent, Sources as ServicesSources, State as ServicesState } from '../services'
+
+export interface State {
+  services: ServicesState
+}
+export type Reducer = (prev?: State) => State | undefined
+
+export interface Sources {
+  DOM: DOMSource
+  onion: StateSource<State>
+}
+
+export interface Sinks {
+  DOM: Stream<VNode>
+  onion: Stream<Reducer>
+}
 
 insertCss(`
    html, body, .main, canvas {
@@ -14,27 +31,38 @@ insertCss(`
   }      
 `)
 
-const Container = createComponent(() => ({}))
-
-function Leader (sources) {
+function Leader (sources: Sources): Sinks {
   const { state$ } = sources.onion
+  const servicesSinks = isolate(ServicesComponent, 'services')(sources as any as ServicesSources)
 
-  const vdom$ = state$
-    .map(({ name }) => {
-      return Container([
+  const vdom$ = xs.combine(
+    state$,
+    servicesSinks.DOM
+  )
+    .map(function ([state, servicesHtml]) {
+      return div([
+        /*
         label('Name:'),
         input('.myinput', {attrs: {type: 'text'}}),
         hr(),
-        h1(`Hello ${name}`)
+        h1(`Hello ${name}`),
+        */
+        servicesHtml
       ])
     })
   
+  /*
   const initReducer$ = xs.of(() => ({ name: '' }))
   const updateReducer$ = sources.DOM
     .select('.myinput').events('input')
     .map(ev => ev.target.value)
     .map(name => () => ({ name }))
-  const reducer$ = xs.merge(initReducer$, updateReducer$)
+  const servicesReducer$ = servicesSinks.onion
+  const reducer$ = xs.merge(initReducer$, updateReducer$, servicesReducer$)
+  */
+  const reducer$ = //xs.merge(
+    servicesSinks.onion
+  //)
 
   return {
     DOM: vdom$,
@@ -42,11 +70,12 @@ function Leader (sources) {
   }
 }
 
-run(onionify(Leader), {
-  DOM: makeFelaDomDriver('#app', {
-    customStyleNode: document.querySelector('#app-styles')
-  })
-})
+const main = onionify(Leader)
+
+run(main, {
+  services: ServicesDriver(),
+  DOM: makeDOMDriver('#app')
+} as RunSources)
 /*
 const React = require('react')
 const h = require('react-hyperscript')
