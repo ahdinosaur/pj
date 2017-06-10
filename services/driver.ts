@@ -1,10 +1,10 @@
 const Bonjour = require('bonjour')
-import xs, { Stream, Producer } from 'xstream'
-const { mapObjIndexed, isNil, assoc, dissoc } = require('ramda')
+import xs, { Producer } from 'xstream'
+const { assoc, dissoc } = require('ramda')
 const net = require('net')
 import { adapt } from '@cycle/run/lib/adapt';
 
-import { Services, DriverSource, DriverSink } from './'
+import { DriverSource, DriverSink, Services, Service } from './'
 
 export default function ServicesDriver () {
   const interval = 1000
@@ -16,16 +16,16 @@ export default function ServicesDriver () {
     const sink = xs.createWithMemory({
       start: (listener) => {
         const browser = bonjour.find(query)
-        const timeout = setInterval(() => {
+        this.timeout = setInterval(() => {
           browser.update()
         }, interval)
 
         var services = {}
 
-        browser.on('up', service => up(service))
-        browser.on('down', service => down(service))
+        browser.on('up', (service: Service) => up(service))
+        browser.on('down', (service: Service) => down(service))
 
-        function up (service) {
+        function up (service: Service) {
           const { fqdn, port, addresses } = service
           const address = addresses[0]
           
@@ -36,15 +36,22 @@ export default function ServicesDriver () {
           service.socket = socket
 
           services = assoc(fqdn, service, services)
+          console.log('services', services)
           listener.next(services)
         }
 
-        function down (service) {
+        function down (service: Service) {
           const { fqdn } = service
           services = dissoc(fqdn, services)
           listener.next(services)
         }
-      }
+      },
+
+      stop: () => {
+        this.timeout && this.timeout.unref && this.timeout.unref()
+      },
+
+      timeout: null
     } as Producer<Services>)
 
     return adapt(sink)

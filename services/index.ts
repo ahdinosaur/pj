@@ -7,6 +7,9 @@ export { default as Component } from './component'
 
 export interface Service {
   fqdn: string
+  port: number
+  addresses: Array<string>
+  socket: any
 }
 
 export interface Services {

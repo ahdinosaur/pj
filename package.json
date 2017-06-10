@@ -4,21 +4,16 @@
   "description": "pixel jockey",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npm-run-all tsc:build -p start tsc:watch",
+    "start:dev": "npm-run-all -p start types:watch",
     "start": "electron .",
-    "tsc:watch": "tsc -w",
-    "tsc:build": "tsc",
-    "test:deps": "dependency-check . leader follower && dependency-check . leader follower --extra --no-dev -i es2040",
+    "types:watch": "tsc -w --noEmit",
+    "types:check": "tsc --noEmit",
+    "test:deps": "dependency-check . leader follower && dependency-check . leader follower --extra --no-dev",
     "test:lint": "standard",
     "test:node": "NODE_ENV=test run-default tape test/*.js --",
     "test:coverage": "NODE_ENV=test nyc npm run test:node",
     "test:coverage:report": "nyc report --reporter=lcov npm run test:node",
     "test": "npm-run-all -s test:node test:lint test:deps"
-  },
-  "browserify": {
-    "transform": [
-      "es2040"
-    ]
   },
   "repository": {
     "type": "git",
@@ -35,6 +30,7 @@
     "@types/node": "^7.0.29",
     "@types/ramda": "0.0.11",
     "dependency-check": "^2.7.0",
+    "electron-prebuilt-compile": "^1.6.11",
     "npm-run-all": "^4.0.1",
     "nyc": "^10.1.2",
     "run-default": "^1.0.0",
@@ -50,8 +46,6 @@
     "cuid": "^1.3.8",
     "cycle-onionify": "^3.3.0",
     "cycle-regl": "0.0.1",
-    "electron": "^1.6.2",
-    "es2040": "^1.2.3",
     "getport": "^0.1.0",
     "insert-css": "^2.0.0",
     "ndarray": "^1.0.18",

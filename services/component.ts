@@ -1,27 +1,35 @@
-import xs, { Stream } from 'xstream'
-import { h, DOMSource, VNode } from '@cycle/dom'
-import { StateSource } from 'cycle-onionify'
+import xs from 'xstream'
+import { ul, li } from '@cycle/dom'
 import { map, values } from 'ramda'
 
-import { Sources, Sinks, State, Service, ServiceList } from './'
+import { Sources, Sinks, State, Reducer, Services, Service, ServiceList } from './'
 
 export default function ServicesComponent (sources: Sources): Sinks {
   const { state$ } = sources.onion
   const services$ = sources.services
+  console.log('services sources', services$)
 
-  const initReducer$ = xs.of(function initReducer (prev?: State): State {
+  const initReducer$ = xs.of(function initReducer (): State {
     return { serviceList: [] }
   })
   const updateReducer$ = services$
-    .mapTo((services) => function updateReducer (prevState: State): State {
-      return { serviceList: values(services) as ServiceList }
+    .mapTo(function (services: Services): Reducer {
+      console.log('services', services)
+      return function updateReducer (prevState: State): State {
+        console.log('prevState', prevState)
+        return {
+          serviceList: values(services) as ServiceList
+        }
+      }
     })
   const reducer$ = xs.merge(initReducer$, updateReducer$)
 
   const vdom$ = state$
-    .map(({ serviceList }) => {
+    .map((state: State) => {
+      const { serviceList } = state
+      console.log('serviceList', serviceList)
       const serviceItems = renderServiceItems(serviceList)
-      return h('ul', {}, serviceItems)
+      return ul({}, serviceItems)
     })
 
   return {
@@ -33,5 +41,5 @@ export default function ServicesComponent (sources: Sources): Sinks {
 const renderServiceItems = map(renderServiceItem)
 
 function renderServiceItem (service: Service) {
-  return h('li', {}, service.fqdn)
+  return li({}, service.fqdn)
 }

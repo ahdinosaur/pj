@@ -7,6 +7,11 @@ const Url = require('url')
 
 var mainWindow
 
+if (process.env.NODE_ENV !== 'production') {
+  const { enableLiveReload } = require('electron-compile')
+  enableLiveReload()
+}
+
 app.on('ready', createLeader)
 app.on('activate', function () {
   if (mainWindow === null) {
@@ -22,7 +27,7 @@ app.on('window-all-closed', function () {
 ipcMain.on('start-follower', createFollower)
 
 function createLeader () {
-  createWindow('./dist/leader')
+  createWindow('./leader')
 }
 
 function createFollower () {

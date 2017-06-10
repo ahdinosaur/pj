@@ -5,21 +5,37 @@ import isolate from '@cycle/isolate'
 import onionify, { StateSource } from 'cycle-onionify'
 const insertCss = require('insert-css')
 
-import { Driver as ServicesDriver, Component as ServicesComponent, Sources as ServicesSources, State as ServicesState } from '../services'
+import {
+  Driver as ServicesDriver,
+  Component as ServicesComponent,
+  Sources as ServicesSources,
+  State as ServicesState
+} from '../services'
+import {
+  Driver as IpcDriver,
+  DriverSource as IpcDriverSource,
+  DriverSink as IpcDriverSink,
+  Component as IpcComponent,
+  Sources as IpcSources,
+  State as IpcState
+} from '../ipc'
 
 export interface State {
   services: ServicesState
+  ipc: IpcState
 }
 export type Reducer = (prev?: State) => State | undefined
 
 export interface Sources {
   DOM: DOMSource
   onion: StateSource<State>
+  ipc: IpcDriverSink
 }
 
 export interface Sinks {
   DOM: Stream<VNode>
   onion: Stream<Reducer>
+  ipc: IpcDriverSource
 }
 
 insertCss(`
@@ -34,39 +50,29 @@ insertCss(`
 function Leader (sources: Sources): Sinks {
   const { state$ } = sources.onion
   const servicesSinks = isolate(ServicesComponent, 'services')(sources as any as ServicesSources)
+  const ipcSinks = isolate(IpcComponent, 'ipc')(sources as any as IpcSources)
 
   const vdom$ = xs.combine(
     state$,
-    servicesSinks.DOM
+    servicesSinks.DOM,
+    ipcSinks.DOM
   )
-    .map(function ([state, servicesHtml]) {
+    .map(function ([state, servicesDom, ipcDom]) {
       return div([
-        /*
-        label('Name:'),
-        input('.myinput', {attrs: {type: 'text'}}),
-        hr(),
-        h1(`Hello ${name}`),
-        */
-        servicesHtml
+        servicesDom,
+        ipcDom
       ])
     })
-  
-  /*
-  const initReducer$ = xs.of(() => ({ name: '' }))
-  const updateReducer$ = sources.DOM
-    .select('.myinput').events('input')
-    .map(ev => ev.target.value)
-    .map(name => () => ({ name }))
-  const servicesReducer$ = servicesSinks.onion
-  const reducer$ = xs.merge(initReducer$, updateReducer$, servicesReducer$)
-  */
-  const reducer$ = //xs.merge(
-    servicesSinks.onion
-  //)
+
+  const reducer$ = xs.merge(
+    servicesSinks.onion,
+    ipcSinks.onion
+  ) as Stream<Reducer>
 
   return {
     DOM: vdom$,
-    onion: reducer$
+    onion: reducer$,
+    ipc: ipcSinks.ipc
   }
 }
 
@@ -74,16 +80,11 @@ const main = onionify(Leader)
 
 run(main, {
   services: ServicesDriver(),
+  ipc: IpcDriver(),
   DOM: makeDOMDriver('#app')
 } as RunSources)
-/*
-const React = require('react')
-const h = require('react-hyperscript')
-const { Provider: FelaProvider } = require('react-fela')
-const PixelsGl = require('pixels-gl')
-const { Surface } = require('gl-react-dom')
 
-const Resux = require('../lib/resux')
+/*
 const SceneList = require('../scenes/components/sceneList')
 const Scene = require('../scenes/components/scene')
 const Services = require('../services/component')
@@ -94,7 +95,6 @@ const modules = [
   require('../opc')
 ]
 
-const renderer = createRenderer()
 const mountNode = document.getElementById('app-styles')
 
 const Container = ({ services, sceneList, setScene, currentSceneOutput, currentParamsForm, sendOpc, ipc }) => {
@@ -120,10 +120,4 @@ const Container = ({ services, sceneList, setScene, currentSceneOutput, currentP
     ipc({ channel: 'start-follower' })
   }
 }
-
-Resux(
-  Container,
-  modules,
-  document.querySelector('#app')
-)
 */
