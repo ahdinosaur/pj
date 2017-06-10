@@ -7,16 +7,13 @@ import { Sources, Sinks, State, Reducer, Services, Service, ServiceList } from '
 export default function ServicesComponent (sources: Sources): Sinks {
   const { state$ } = sources.onion
   const services$ = sources.services
-  console.log('services sources', services$)
 
   const initReducer$ = xs.of(function initReducer (): State {
     return { serviceList: [] }
   })
   const updateReducer$ = services$
-    .mapTo(function (services: Services): Reducer {
-      console.log('services', services)
+    .map(function (services: Services): Reducer {
       return function updateReducer (prevState: State): State {
-        console.log('prevState', prevState)
         return {
           serviceList: values(services) as ServiceList
         }
@@ -27,7 +24,6 @@ export default function ServicesComponent (sources: Sources): Sinks {
   const vdom$ = state$
     .map((state: State) => {
       const { serviceList } = state
-      console.log('serviceList', serviceList)
       const serviceItems = renderServiceItems(serviceList)
       return ul({}, serviceItems)
     })
