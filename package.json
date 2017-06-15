@@ -47,6 +47,8 @@
     "cycle-onionify": "^3.3.0",
     "cycle-regl": "0.0.1",
     "getport": "^0.1.0",
+    "glsl-hsl2rgb": "^1.1.0",
+    "glslify": "^6.1.0",
     "insert-css": "^2.0.0",
     "ndarray": "^1.0.18",
     "opc": "ahdinosaur/js-opc#codec",

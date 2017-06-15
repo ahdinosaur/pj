@@ -5,6 +5,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
+    "allowJs": true,
     "lib": [
       "es2015",
       "dom"

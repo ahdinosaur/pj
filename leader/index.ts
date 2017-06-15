@@ -3,6 +3,7 @@ import { run, Sources as RunSources } from '@cycle/run'
 import { div, makeDOMDriver, DOMSource, VNode } from '@cycle/dom'
 import isolate from '@cycle/isolate'
 import onionify, { StateSource } from 'cycle-onionify'
+import { makeReglDriver } from 'cycle-regl'
 const insertCss = require('insert-css')
 
 import {
@@ -19,10 +20,16 @@ import {
   Sources as IpcSources,
   State as IpcState
 } from '../ipc'
+import {
+  Component as SceneComponent,
+  Sources as SceneSources,
+  State as SceneState
+} from '../scene'
 
 export interface State {
   services: ServicesState
   ipc: IpcState
+  scene: SceneState
 }
 export type Reducer = (prev?: State) => State | undefined
 
@@ -39,7 +46,7 @@ export interface Sinks {
 }
 
 insertCss(`
-   html, body, .main, canvas {
+   html, body, .app-canvas {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -51,28 +58,33 @@ function Leader (sources: Sources): Sinks {
   const { state$ } = sources.onion
   const servicesSinks = isolate(ServicesComponent, 'services')(sources as any as ServicesSources)
   const ipcSinks = isolate(IpcComponent, 'ipc')(sources as any as IpcSources)
+  const sceneSinks = isolate(SceneComponent, 'scene')(sources as any as SceneSources)
 
   const vdom$ = xs.combine(
     state$,
     servicesSinks.DOM,
-    ipcSinks.DOM
+    ipcSinks.DOM,
+    sceneSinks.DOM
   )
-    .map(function ([state, servicesDom, ipcDom]) {
-      return div([
-        servicesDom,
-        ipcDom
-      ])
-    })
+  .map(function ([state, servicesDom, ipcDom, sceneDom]) {
+    return div([
+      servicesDom,
+      ipcDom,
+      sceneDom
+    ])
+  })
 
   const reducer$ = xs.merge(
     servicesSinks.onion,
-    ipcSinks.onion
+    ipcSinks.onion,
+    sceneSinks.onion
   ) as Stream<Reducer>
 
   return {
     DOM: vdom$,
     onion: reducer$,
-    ipc: ipcSinks.ipc
+    ipc: ipcSinks.ipc,
+    Regl: sceneSinks.Regl$
   }
 }
 
@@ -81,7 +93,10 @@ const main = onionify(Leader)
 run(main, {
   services: ServicesDriver(),
   ipc: IpcDriver(),
-  DOM: makeDOMDriver('#app')
+  DOM: makeDOMDriver('#app'),
+  Regl: makeReglDriver({
+    container: document.querySelector('#app-gl')
+  })
 } as RunSources)
 
 /*
