@@ -12,9 +12,30 @@ export interface Scenes {
   [key: string]: Scene
 }
 
+export interface Param {
+  type: string
+  min: number
+  max: number
+  step: number
+  value: number
+}
+
+export interface Params {
+  [key: string]: Param
+}
+
+export type Value = any
+
+export interface Values {
+  [key: string]: Value
+}
+
 export interface State {
   scenes: Scenes
-  currentSceneId: string
+  sceneId: string
+  params: Params
+  values: Values
+
 }
 
 export type Reducer = (prev?: State) => State | undefined

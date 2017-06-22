@@ -1,9 +1,9 @@
 import xs, { Stream } from 'xstream'
-import { div, span, ul, li, button } from '@cycle/dom'
+import { div, span, ul, li, button, input } from '@cycle/dom'
 import { pipe, map, merge, assoc, prop, values } from 'ramda'
 import { makeReglView } from 'cycle-regl'
 
-import { Sources, Sinks, State, Reducer, SetAction, Scene, Scenes } from './'
+import { Sources, Sinks, State, Reducer, SetAction, Scene, Param } from './'
 import scenes from './scenes'
 
 const fps = 60
@@ -11,20 +11,35 @@ const interval = 1000 / fps
 const first = prop(0)
 const name = prop('name')
 const id = prop('id')
+const params = prop('params')
 
 console.log(scenes)
+const scenesParams = map(params, scenes)
 
-function intent(domSource: DOMSource): Stream<Action> {
+function intent (domSource: DOMSource): Stream<Action> {
   // TODO use isolated child components?
   const action$ByScenes = map((scene): Scene => {
-    return domSource.select('.play-' + id(scene))
+    const playAction$ = domSource.select('.play-' + id(scene))
       .events('click')
       .map(clickEv => {
         return {
-          type: 'SET',
+          type: 'PLAY',
           sceneId: id(scene)
         } as SetAction
       })
+    const action$ByParams = map((param): Param => {
+      const editAction$ = domSource.select('.edit-' + id(param))
+        .events('input')
+        .map(clickEv => {
+          return {
+            type: 'EDIT',
+            sceneId: id(scene),
+            paramId: id(param),
+            value: clickEv.target.value
+          } as EditAction
+        })
+    }, values(scene.params))
+    return xs.merge(playAction$, action$ByParams)
   }, values(scenes))
   return xs.merge(...action$ByScenes)
 }
@@ -33,30 +48,59 @@ function model(action$: Stream<Action>): Stream<Reducer> {
   const initReducer$ = xs.of(function initReducer(prev?: State): State {
     return {
       scenes,
-      currentSceneId: id(first(values(scenes)))
+      sceneId: id(first(values(scenes)))
     }
   })
 
-  const setReducer$ = action$
-    .filter(ac => ac.type === 'SET')
-    .map((ac) => assoc('currentSceneId', ac.sceneId) as Reducer)
+  const playReducer$ = action$
+    .filter(ac => ac.type === 'PLAY')
+    .map((ac) => assoc('sceneId', ac.sceneId) as Reducer)
 
-  return xs.merge(initReducer$, setReducer$)
+  const editReducer$ = action$
+    .filter(ac => ac.type === 'EDIT')
+    .map((ac) => pipe(
+      assoc('value'),
+      assoc(ac.sceneId),
+      assoc(ac.paramId)
+    ) as Reducer)
+
+  return xs.merge(initReducer$, playReducer$, editReducer$)
 }
 
 const viewSceneItems = pipe(
   map(scene => {
-    return li(button('.play-' + scene.id, scene.name))
+    return button('.play-' + scene.id, scene.name)
   }),
-  values
+  map(li),
+  values,
+  ul
+)
+
+const viewSceneParams = pipe(
+  map(param => {
+    let options = {
+      attrs: {}
+    }
+    if (param.type === 'number') {
+      Object.assign(options.attrs, param)
+    }
+    return input('.edit-' + param.id, options, param.name)
+  }),
+  map(li),
+  values,
+  ul
 )
 
 function view (state$: Stream<State>): Stream<VNode> {
-  return state$.map(state => {
-    console.log('view', state)
+  return state$.map(({ sceneId, scenes }) => {
+    const scene = scenes[sceneId]
+    const { id, params } = scene
     return div([
-      span('Current scene: ' + state.currentSceneId),
-      ul(viewSceneItems(state.scenes))
+      div([
+        span('Current scene: ' + id),
+        viewSceneItems(scenes)
+      ]),
+      viewSceneParams(params)
     ])
   })
 }
@@ -85,7 +129,7 @@ export default function ServicesComponent (sources: Sources): Sinks {
   const { state$ } = sources.onion
 
   const currentScene$ = state$.map(state => {
-    return scenes[state.currentSceneId]
+    return scenes[state.sceneId]
   })
 
   const tick$ = xs.periodic(interval)

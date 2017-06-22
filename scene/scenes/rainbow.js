@@ -6,8 +6,7 @@ exports.render = render
 exports.commands = commands
 exports.id = 'rainbow'
 exports.name = 'Rainbow Scene'
-exports.schema = {}
-exports.initialValues = {}
+exports.params = []
 
 function props ({ params$, tick$ }) {
   return params$

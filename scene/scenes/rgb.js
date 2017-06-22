@@ -6,47 +6,32 @@ exports.render = render
 exports.commands = commands
 exports.id = 'rgb'
 exports.name = 'RGB Scene'
-exports.schema = {
-  type: 'object',
-  properties: {
-    red: {
-      type: 'number',
-      minimum: 0,
-      maximum: 1,
-      multipleOf: 0.01
-    },
-    green: {
-      type: 'number',
-      minimum: 0,
-      maximum: 1,
-      multipleOf: 0.01
-    },
-    blue: {
-      type: 'number',
-      minimum: 0,
-      maximum: 1,
-      multipleOf: 0.01
-    }
-  }
-}
-
-exports.uiSchema = {
-  red: {
-    'ui:widget': 'range'
+exports.params = [
+  {
+    name: 'red',
+    type: 'number',
+    value: 0,
+    minimum: 0,
+    maximum: 1,
+    step: 0.01
   },
-  green: {
-    'ui:widget': 'range'
+  {
+    name: 'green',
+    type: 'number',
+    value: 1,
+    minimum: 0,
+    maximum: 1,
+    step: 0.01
   },
-  blue: {
-    'ui:widget': 'range'
+  {
+    name: 'blue',
+    type: 'number',
+    value: 0,
+    minimum: 0,
+    maximum: 1,
+    step: 0.01
   }
-}
-
-exports.initialValues = {
-  red: 1,
-  green: 0,
-  blue: 0
-}
+]
 
 function props ({ params$, tick$ }) {
   return xs.of(exports.initialValues)
