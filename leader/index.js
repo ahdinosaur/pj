@@ -1,13 +1,11 @@
-const React = require('react')
-const h = require('react-hyperscript')
-const { createRenderer } = require('fela')
-const { Provider: FelaProvider } = require('react-fela')
+const App = require('choo')
+const Log = require('choo-log')
+const html = require('choo/html')
 const PixelsGl = require('pixels-gl')
-const { Surface } = require('gl-react-dom')
 const insertCss = require('insert-css')
 
 insertCss(`
-   html, body, .main, canvas {
+   html, body, main, canvas {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -15,46 +13,28 @@ insertCss(`
   }      
 `)
 
-const Resux = require('../lib/resux')
-const SceneList = require('../scenes/components/sceneList')
-const Scene = require('../scenes/components/scene')
-const Services = require('../services/component')
-const modules = [
-  require('../services'),
-  require('../scenes'),
-  require('../ipc'),
-  require('../opc')
-]
+var app = App()
+app.use(Log())
+app.use(require('../ipc/store'))
+app.use(require('../pixels/store'))
+app.use(require('../scene/store'))
+app.route('#/', LayoutView(require('../pixels/view')))
+app.route('#/:name', LayoutView(require('../scene/view')))
+app.mount('main')
 
-const renderer = createRenderer()
-const mountNode = document.getElementById('app-styles')
-
-const Container = ({ services, sceneList, setScene, currentSceneOutput, currentParamsForm, sendOpc, ipc }) => {
-  return h(FelaProvider, { renderer, mountNode }, [
-    h('div', { className: 'main' }, [
-      // show services
-      h(Services, { services }),
-      // show scenes
-      h(SceneList, { sceneList, setScene }),
-      // show scene
-      h(Scene, { scene: currentSceneOutput, paramsForm: currentParamsForm, send }),
-      // open new followerS
-      h('button', { className: 'follower', onClick: startFollower }, 'start follower!')
-    ]),
-  ])
-
-  function send (pixels) {
-    sendOpc({ pixels, services })
-  }
-
-
-  function startFollower ()  {
-    ipc({ channel: 'start-follower' })
+function LayoutView (MainView) {
+  return (state, emit) => {
+    return html`
+      <main>
+        <h1>Pixel Jockey</h1>
+        <nav>
+          <a href='#/'>pixels</a>
+          ${state.scenes.map(name => html`
+            <a href='#/${name}'>${name}</a>
+          `)}
+        </nav>
+        ${MainView(state, emit)}
+      </main>
+    `
   }
 }
-
-Resux(
-  Container,
-  modules,
-  document.querySelector('#app')
-)

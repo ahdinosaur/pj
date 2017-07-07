@@ -22,11 +22,11 @@ app.on('window-all-closed', function () {
 ipcMain.on('start-follower', createFollower)
 
 function createLeader () {
-  createWindow('./leader')
+  createWindow('leader')
 }
 
 function createFollower () {
-  createWindow('./follower')
+  createWindow('follower')
 }
 
 function createWindow (path) {
@@ -36,8 +36,7 @@ function createWindow (path) {
   })
 
   mainWindow.loadURL(Url.format({
-    pathname: Path.join(__dirname, 'index.html'),
-    hash: `#${path}`,
+    pathname: Path.join(__dirname, path, 'index.html'),
     protocol: 'file:',
     slashes: true
   }))
