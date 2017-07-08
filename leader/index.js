@@ -16,9 +16,10 @@ insertCss(`
 var app = App()
 app.use(Log())
 app.use(require('../ipc/store'))
-app.use(require('../pixels/store'))
+app.use(require('../service/store'))
+app.use(require('../opc/store'))
 app.use(require('../scene/store'))
-app.route('#/', LayoutView(require('../pixels/view')))
+app.route('#/', LayoutView(require('../opc/view')))
 app.route('#/:name', LayoutView(require('../scene/view')))
 app.mount('main')
 

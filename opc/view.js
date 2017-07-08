@@ -3,28 +3,28 @@ const { pipe, map, values } = require('ramda')
 
 const IpcView = require('../ipc/view')
 
-module.exports = PixelsView
+module.exports = OpcView
 
-function PixelsView (state, emit) {
+function OpcView (state, emit) {
   return html`
     <div>
       ${IpcView(state, emit)}
-      ${PixelServices(state.pixels)}
+      ${OpcServices(state.services)}
     </div>
   `
 }
 
-function PixelServices (services) {
+function OpcServices (services) {
   return html`
     <ul>
-      ${mapPixelServices(services)}
+      ${mapOpcServices(services)}
     </ul>
   `
 }
 
-const mapPixelServices = pipe(map(PixelService), values)
+const mapOpcServices = pipe(map(OpcService), values)
 
-function PixelService (service) {
+function OpcService (service) {
   return html`
     <li>
       ${service.fqdn}

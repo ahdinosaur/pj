@@ -1,8 +1,7 @@
-const sendOpc = ({ pixels, services }) => ({
-  pixels,
-  services
-})
+const up = (service) => service
+const down = (service) => service
 
 module.exports = {
-  sendOpc
+  up,
+  down
 }

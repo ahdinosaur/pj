@@ -4,7 +4,7 @@ module.exports = SceneView
 
 function SceneView (state, emit) {
   if (!state.scene) return
-  const scene = state.scene(state.inputs)
+  const scene = state.scene()
 
   return html`
     <div>

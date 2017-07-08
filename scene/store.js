@@ -1,6 +1,14 @@
 const { keys } = Object
-const rcom = require('regl-component')(require('regl'))
+const rcom = require('regl-component')(
+  require('regl'),
+  {
+    attributes: {
+      preserveDrawingBuffer: true
+    }
+  }
+)
 const raf = require('nanoraf')
+const Ndarray = require('ndarray')
 
 module.exports = SceneStore
 
@@ -20,7 +28,6 @@ function SceneStore (state, emitter) {
   emitter.on('navigate', reset)
 
   emitter.on('setInput', ({ key, value }) => {
-    console.log('inputs', state.inputs, key, value)
     state.inputs[key] = value
     emitter.emit('render')
   })
@@ -41,13 +48,27 @@ function SceneStore (state, emitter) {
     state.scene = null
     state.inputs = {}
   }
-}
 
-function getScene (name) {
-  const scene = scenes[name](rcom.create())
-  return function (inputs) {
-    scene.clear()
-    scene.draw(scene.props(inputs))
-    return scene
+  function getScene (name) {
+    const rc = rcom.create()
+    const scene = scenes[name](rc)
+    return function (inputs) {
+      scene.clear()
+      scene.draw(scene.props(state.inputs))
+      const rect = rc.element.getBoundingClientRect()
+      const x = rect.left
+      const y = window.innerHeight - rect.bottom
+      const width = rect.right - rect.left
+      const height = rect.bottom - rect.top
+      const data = rc.regl.read({ x, y, width, height })
+      if (data == null) return scene
+      state.pixels = Ndarray(
+        data,
+        [width, height, 3]
+      )
+      state.pixels.format = 'rgb'
+      return scene
+    }
   }
 }
+
