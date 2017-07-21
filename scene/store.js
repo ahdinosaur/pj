@@ -60,13 +60,15 @@ function SceneStore (state, emitter) {
       const y = window.innerHeight - rect.bottom
       const width = rect.right - rect.left
       const height = rect.bottom - rect.top
-      const data = rc.regl.read({ x, y, width, height })
+      var data = state.pixelsBuffer
+      data = rc.regl.read({ x, y, width, height, data })
+      state.pixelsBuffer = data
       if (data == null) return scene
       state.pixels = Ndarray(
         data,
-        [width, height, 3]
+        [width, height, 4]
       )
-      state.pixels.format = 'rgb'
+      state.pixels.format = 'rgba'
       return scene
     }
   }

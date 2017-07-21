@@ -59,7 +59,7 @@ getPort((err, port) => {
       pull.map(message => {
         // message.channel
         // message.command
-        var pixels = Ndarray(message.data, [128, 128, 3])
+        var pixels = Ndarray(message.data, [64, 64, 3])
         pixels.format = 'rgb'
         return pixels
       }),

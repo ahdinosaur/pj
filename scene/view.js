@@ -10,7 +10,7 @@ function SceneView (state, emit) {
     <div>
       ${state.rcom.render()}
       <h2>${state.params.name}</h2>
-      ${scene.render({ width: 800, height: 400 })}
+      ${scene.render({ width: 4, height: 4 })}
       ${scene.inputs && scene.inputs(state.inputs, emit)}
     </div>
   `

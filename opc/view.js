@@ -6,6 +6,7 @@ const IpcView = require('../ipc/view')
 module.exports = OpcView
 
 function OpcView (state, emit) {
+  // TODO filter state.services for opc
   return html`
     <div>
       ${IpcView(state, emit)}
@@ -14,20 +15,20 @@ function OpcView (state, emit) {
   `
 }
 
-function OpcServices (services) {
+function OpcServices (opcServices) {
   return html`
     <ul>
-      ${mapOpcServices(services)}
+      ${mapOpcServices(opcServices)}
     </ul>
   `
 }
 
 const mapOpcServices = pipe(map(OpcService), values)
 
-function OpcService (service) {
+function OpcService (opcService) {
   return html`
     <li>
-      ${service.fqdn}
+      ${opcService.fqdn}
     </li>
   `
 }

@@ -50,7 +50,7 @@
     "ndarray": "^1.0.18",
     "opc": "ahdinosaur/js-opc#codec",
     "pixels-gl": "^2.0.0",
-    "pixels-opc": "^4.0.2",
+    "pixels-opc": "^5.0.0",
     "pull-opc": "^1.0.1",
     "pull-stream": "^3.5.0",
     "ramda": "^0.23.0",

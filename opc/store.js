@@ -53,6 +53,7 @@ function OpcStore (state, emitter) {
 
   function sendOpcBufferToService (service, pixelBuffer) {
     const { socket } = service
+    if (!socket) return
     const channel = 0
     const opcBuffer = encodePixelsMessage(channel, pixelBuffer)
     socket.write(opcBuffer)
